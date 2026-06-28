@@ -1,5 +1,3 @@
-"use client";
-
 interface ProgressBarProps {
   answered: number;
   total: number;

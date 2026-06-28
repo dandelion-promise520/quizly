@@ -9,7 +9,11 @@ import ResultBanner from "./ResultBanner";
 import QuizFooter from "./QuizFooter";
 import { useQuizState } from "@/hooks/useQuizState";
 
-export default function QuizPage() {
+interface QuizPageProps {
+  initialQuestions: Question[];
+}
+
+export default function QuizPage({ initialQuestions }: QuizPageProps) {
   const {
     questions,
     score,
@@ -22,7 +26,7 @@ export default function QuizPage() {
     submitAll,
     resetAll,
     hydrated,
-  } = useQuizState();
+  } = useQuizState(initialQuestions);
 
   const allDone = answered >= total;
 

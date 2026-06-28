@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Question, SavedAnswer } from "@/lib/types";
-import questionsData from "@/lib/questions.json";
 
 const STORAGE_KEY = "db_quiz_progress";
-const TOTAL = 41;
 const PTS = 5;
 
 function shuffle<T>(arr: T[]): T[] {
@@ -78,7 +76,8 @@ export interface QuizHookReturn {
   hydrated: boolean;
 }
 
-export function useQuizState(): QuizHookReturn {
+export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
+  const TOTAL = initialQuestions.length;
   const [hydrated, setHydrated] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
@@ -111,30 +110,43 @@ export function useQuizState(): QuizHookReturn {
     let an = 0;
 
     if (saved && saved.questions.length === TOTAL) {
-      q = saved.questions as Question[];
+      q = (saved.questions as Question[]).map((question) => {
+        const item = { ...question };
+        if (item.type === "填空题") {
+          if (!Array.isArray(item.answer)) {
+            item.answer = typeof item.answer === "string" ? [item.answer] : [];
+          }
+          if (!Array.isArray((item as any).blanks)) {
+            (item as any).blanks = typeof (item as any).blanks === "string" ? [(item as any).blanks] : [];
+          }
+        }
+        return item;
+      });
       s = saved.state?.score ?? saved.score ?? 0;
       an = saved.state?.answered ?? saved.answered ?? 0;
       a = saved.answers ?? {};
 
       // Fill missing shuffle data
-      questionsData.forEach((orig, i) => {
+      initialQuestions.forEach((orig, i) => {
         if (i >= q.length) return;
         if (!(q[i] as any).shuffledOptions) {
-          const correctText = orig.options?.find((o) => o.label === orig.answer)?.text;
-          if (correctText) {
-            const shuffledByText = shuffle((orig.options ?? []).map((o) => o.text));
-            (q[i] as any).shuffledOptions = shuffledByText.map((text, idx) => ({
-              label: String.fromCharCode(65 + idx), text,
-            }));
-            (q[i] as any).correctShuffledIdx = (q[i] as any).shuffledOptions!.findIndex(
-              (o: { text: string }) => o.text === correctText
-            );
-            (q[i] as any).answer = (q[i] as any).shuffledOptions![(q[i] as any).correctShuffledIdx!].label;
+          if (orig.type !== "填空题") {
+            const correctText = orig.options.find((o) => o.label === orig.answer)?.text;
+            if (correctText) {
+              const shuffledByText = shuffle(orig.options.map((o) => o.text));
+              (q[i] as any).shuffledOptions = shuffledByText.map((text, idx) => ({
+                label: String.fromCharCode(65 + idx), text,
+              }));
+              (q[i] as any).correctShuffledIdx = (q[i] as any).shuffledOptions!.findIndex(
+                (o: { text: string }) => o.text === correctText
+              );
+              (q[i] as any).answer = (q[i] as any).shuffledOptions![(q[i] as any).correctShuffledIdx!].label;
+            }
           }
         }
       });
     } else {
-      q = shuffleQuestions(questionsData as Question[]);
+      q = shuffleQuestions(initialQuestions);
     }
 
     const df: Record<number, boolean> = {};
@@ -145,7 +157,7 @@ export function useQuizState(): QuizHookReturn {
     setAnswered(an);
     setAnswers(a);
     setDoneFlags(df);
-  }, [hydrated]);
+  }, [hydrated, initialQuestions, TOTAL]);
 
   const pickAnswer = useCallback((qi: number, oi: number) => {
     setDoneFlags((prev) => {
@@ -214,13 +226,13 @@ export function useQuizState(): QuizHookReturn {
 
   const resetAll = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
-    const q = shuffleQuestions(questionsData as Question[]);
+    const q = shuffleQuestions(initialQuestions);
     setQuestions(q);
     setScore(0);
     setAnswered(0);
     setAnswers({});
     setDoneFlags({});
-  }, []);
+  }, [initialQuestions]);
 
   return {
     questions,

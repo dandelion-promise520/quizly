@@ -2,6 +2,7 @@
 
 import type { FillQuestion } from "@/lib/types";
 import { useState } from "react";
+import { Button } from "./motion/button";
 
 interface FillCardProps {
   question: FillQuestion;
@@ -18,9 +19,10 @@ export default function FillCard({
   userAnswers,
   onSubmit,
 }: FillCardProps) {
-  const blankCount = question.answer.length;
+  const answersArr = Array.isArray(question.answer) ? question.answer : [question.answer || ""];
+  const blankCount = answersArr.length;
   const [inputs, setInputs] = useState<string[]>(
-    userAnswers ?? question.answer.map(() => "")
+    userAnswers ?? answersArr.map(() => "")
   );
 
   const handleSubmit = () => {
@@ -65,12 +67,14 @@ export default function FillCard({
         </div>
       ))}
       {!done && (
-        <button
-          className="self-end px-7 py-2 rounded-full text-sm font-semibold font-sans text-white border-none bg-teal-600 cursor-pointer transition-colors duration-200 hover:bg-teal-700"
+        <Button
+          variant="primary"
+          size="sm"
+          className="self-end px-7 py-2 font-sans"
           onClick={handleSubmit}
         >
           提交答案
-        </button>
+        </Button>
       )}
     </div>
   );

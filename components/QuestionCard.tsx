@@ -4,6 +4,7 @@ import type { Question, FillQuestion, ChoiceQuestion } from "@/lib/types";
 import ChoiceCard from "./ChoiceCard";
 import FillCard from "./FillCard";
 import FeedbackBanner from "./FeedbackBanner";
+import { TiltCard } from "./motion/tilt-card";
 
 interface QuestionCardProps {
   question: Question;
@@ -80,8 +81,10 @@ export default function QuestionCard({
     : "";
 
   return (
-    <div
-      className={`bg-white border border-slate-200 rounded-xl p-6 mb-4 shadow-sm transition-shadow duration-300 ${cardBorder}`}
+    <TiltCard
+      max={4}
+      glare={true}
+      className={`bg-white border border-slate-200 rounded-xl p-6 mb-4 shadow-sm transition-all duration-300 ${cardBorder}`}
     >
       {/* Question header */}
       <div className="flex items-start gap-2.5 mb-4.5">
@@ -116,6 +119,6 @@ export default function QuestionCard({
       )}
 
       <FeedbackBanner show={done} type={feedbackType} message={feedbackMsg} />
-    </div>
+    </TiltCard>
   );
 }

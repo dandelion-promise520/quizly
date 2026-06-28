@@ -1,5 +1,3 @@
-"use client";
-
 interface ScoreboardProps {
   score: number;
   answered: number;

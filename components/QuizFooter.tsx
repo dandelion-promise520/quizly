@@ -1,5 +1,7 @@
 "use client";
 
+import { StatefulButton, MagneticButton } from "./motion/button";
+
 interface QuizFooterProps {
   allDone: boolean;
   onSubmitAll: () => void;
@@ -10,20 +12,25 @@ export default function QuizFooter({ allDone, onSubmitAll, onReset }: QuizFooter
   return (
     <div className="flex justify-center gap-3 mt-10">
       {!allDone && (
-        <button
-          className="px-9 py-3 rounded-full text-base font-semibold font-sans text-white border-none bg-teal-600 shadow-[0_2px_8px_rgba(13,148,136,0.25)] cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(13,148,136,0.35)] hover:-translate-y-0.5 active:translate-y-0"
+        <StatefulButton
+          variant="primary"
+          size="lg"
+          ripple={true}
+          className="px-9 py-3 shadow-[0_2px_8px_rgba(13,148,136,0.25)] font-sans"
           onClick={onSubmitAll}
         >
           提交全部答案
-        </button>
+        </StatefulButton>
       )}
       {allDone && (
-        <button
-          className="px-9 py-3 rounded-full text-base font-semibold font-sans bg-white text-slate-600 border-[1.5px] border-slate-200 cursor-pointer transition-all duration-200 hover:border-teal-600 hover:text-teal-600"
+        <MagneticButton
+          variant="secondary"
+          size="lg"
+          className="px-9 py-3 font-sans"
           onClick={onReset}
         >
           重新作答
-        </button>
+        </MagneticButton>
       )}
     </div>
   );

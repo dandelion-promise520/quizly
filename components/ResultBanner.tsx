@@ -1,5 +1,3 @@
-"use client";
-
 interface ResultBannerProps {
   score: number;
   total: number;

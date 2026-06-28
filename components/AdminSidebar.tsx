@@ -2,6 +2,7 @@
 
 import type { Question } from "@/lib/types";
 import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "./motion/tabs";
 
 interface AdminSidebarProps {
   questions: Question[];
@@ -16,9 +17,9 @@ interface AdminSidebarProps {
 
 const TYPE_LABELS: Record<string, string> = {
   "": "全部",
-  "单选题": "单选题",
-  "判断题": "判断题",
-  "填空题": "填空题",
+  "单选题": "单选",
+  "判断题": "判断",
+  "填空题": "填空",
 };
 
 export default function AdminSidebar({
@@ -56,15 +57,20 @@ export default function AdminSidebar({
           onChange={(e) => onSearchChange(e.target.value)}
         />
 
-        <select
-          className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg outline-none focus:border-teal-500 bg-white"
+        <Tabs
           value={typeFilter}
-          onChange={(e) => onTypeFilterChange(e.target.value)}
+          onValueChange={onTypeFilterChange}
+          variant="segment"
+          className="w-full"
         >
-          {Object.entries(TYPE_LABELS).map(([val, label]) => (
-            <option key={val} value={val}>{label}</option>
-          ))}
-        </select>
+          <TabsList className="w-full justify-between">
+            {Object.entries(TYPE_LABELS).map(([val, label]) => (
+              <TabsTrigger key={val} value={val} className="flex-1 text-xs px-1 py-1">
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         <div className="text-xs text-slate-500">
           共 {questions.length} 题，筛选 {filtered.length} 题

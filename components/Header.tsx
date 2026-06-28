@@ -1,5 +1,3 @@
-"use client";
-
 import type { Question } from "@/lib/types";
 
 interface HeaderProps {
