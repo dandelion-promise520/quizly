@@ -1,0 +1,238 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Question, SavedAnswer } from "@/lib/types";
+import questionsData from "@/lib/questions.json";
+
+const STORAGE_KEY = "db_quiz_progress";
+const TOTAL = 41;
+const PTS = 5;
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function shuffleQuestions(questions: Question[]): Question[] {
+  const shuffled = shuffle(questions);
+  return shuffled.map((q) => {
+    if (q.type === "填空题") return q;
+    const correctText = q.options.find((o) => o.label === q.answer)?.text;
+    if (!correctText) return q;
+    const shuffledByText = shuffle(q.options.map((o) => o.text));
+    const shuffledOptions = shuffledByText.map((text, idx) => ({
+      label: String.fromCharCode(65 + idx),
+      text,
+    }));
+    const correctShuffledIdx = shuffledOptions.findIndex(
+      (o) => o.text === correctText
+    );
+    return {
+      ...q,
+      shuffledOptions,
+      correctShuffledIdx,
+      answer: shuffledOptions[correctShuffledIdx!]!.label,
+    };
+  });
+}
+
+function loadSaved(): { state: { score: number; answered: number }; answers: SavedAnswer; questions: Partial<Question>[]; score?: number; answered?: number } | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return null;
+}
+
+function persist(questions: Question[], answers: SavedAnswer, score: number, answered: number) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    score,
+    answered,
+    questions: questions.map((q) => ({
+      type: q.type, text: q.text,
+      options: q.type === "填空题" ? [] : q.options,
+      blanks: (q as any).blanks,
+      shuffledOptions: (q as any).shuffledOptions,
+      correctShuffledIdx: (q as any).correctShuffledIdx,
+      answer: q.answer,
+    })),
+    answers,
+  }));
+}
+
+export interface QuizHookReturn {
+  questions: Question[];
+  score: number;
+  answered: number;
+  total: number;
+  answers: SavedAnswer;
+  doneFlags: Record<number, boolean>;
+  pickAnswer: (qi: number, oi: number) => void;
+  submitFill: (qi: number, userAnswers: string[]) => void;
+  submitAll: () => void;
+  resetAll: () => void;
+  hydrated: boolean;
+}
+
+export function useQuizState(): QuizHookReturn {
+  const [hydrated, setHydrated] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(0);
+  const [answers, setAnswers] = useState<SavedAnswer>({});
+  const [doneFlags, setDoneFlags] = useState<Record<number, boolean>>({});
+
+  // Refs for reading latest state inside callbacks
+  const questionsRef = useRef<Question[]>([]);
+  const scoreRef = useRef(0);
+  const answeredRef = useRef(0);
+  const answersRef = useRef<SavedAnswer>({});
+
+  useEffect(() => { questionsRef.current = questions; }, [questions]);
+  useEffect(() => { scoreRef.current = score; }, [score]);
+  useEffect(() => { answeredRef.current = answered; }, [answered]);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+
+  // Hydration guard
+  useEffect(() => { setHydrated(true); }, []);
+
+  // Init: shuffle or restore
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const saved = loadSaved();
+    let q: Question[];
+    let a: SavedAnswer = {};
+    let s = 0;
+    let an = 0;
+
+    if (saved && saved.questions.length === TOTAL) {
+      q = saved.questions as Question[];
+      s = saved.state?.score ?? saved.score ?? 0;
+      an = saved.state?.answered ?? saved.answered ?? 0;
+      a = saved.answers ?? {};
+
+      // Fill missing shuffle data
+      questionsData.forEach((orig, i) => {
+        if (i >= q.length) return;
+        if (!(q[i] as any).shuffledOptions) {
+          const correctText = orig.options?.find((o) => o.label === orig.answer)?.text;
+          if (correctText) {
+            const shuffledByText = shuffle((orig.options ?? []).map((o) => o.text));
+            (q[i] as any).shuffledOptions = shuffledByText.map((text, idx) => ({
+              label: String.fromCharCode(65 + idx), text,
+            }));
+            (q[i] as any).correctShuffledIdx = (q[i] as any).shuffledOptions!.findIndex(
+              (o: { text: string }) => o.text === correctText
+            );
+            (q[i] as any).answer = (q[i] as any).shuffledOptions![(q[i] as any).correctShuffledIdx!].label;
+          }
+        }
+      });
+    } else {
+      q = shuffleQuestions(questionsData as Question[]);
+    }
+
+    const df: Record<number, boolean> = {};
+    Object.keys(a).forEach((key) => { df[parseInt(key, 10)] = true; });
+
+    setQuestions(q);
+    setScore(s);
+    setAnswered(an);
+    setAnswers(a);
+    setDoneFlags(df);
+  }, [hydrated]);
+
+  const pickAnswer = useCallback((qi: number, oi: number) => {
+    setDoneFlags((prev) => {
+      if (prev[qi]) return prev;
+      const q = questionsRef.current[qi];
+      if (q.type === "填空题") return prev;
+      const isRight = oi === (q as any).correctShuffledIdx;
+      setScore((s) => s + (isRight ? PTS : 0));
+      setAnswered((a) => a + 1);
+      setAnswers((prevA) => {
+        const next = { ...prevA, [String(qi)]: oi };
+        persist(questionsRef.current, next, scoreRef.current + (isRight ? PTS : 0), answeredRef.current + 1);
+        return next;
+      });
+      return { ...prev, [qi]: true };
+    });
+  }, []);
+
+  const submitFill = useCallback((qi: number, userAnswers: string[]) => {
+    setDoneFlags((prev) => {
+      if (prev[qi]) return prev;
+      const q = questionsRef.current[qi];
+      if (q.type !== "填空题") return prev;
+      const fillQ = q as any;
+      let blankCorrect = 0;
+      for (let b = 0; b < fillQ.answer.length; b++) {
+        if (userAnswers[b] === fillQ.answer[b]) blankCorrect++;
+      }
+      const allCorrect = blankCorrect === fillQ.answer.length;
+      setScore((s) => s + (allCorrect ? PTS : 0));
+      setAnswered((a) => a + 1);
+      setAnswers((prevA) => {
+        const next = { ...prevA, [String(qi)]: userAnswers };
+        persist(questionsRef.current, next, scoreRef.current + (allCorrect ? PTS : 0), answeredRef.current + 1);
+        return next;
+      });
+      return { ...prev, [qi]: true };
+    });
+  }, []);
+
+  const submitAll = useCallback(() => {
+    setDoneFlags((prevDf) => {
+      const newDf = { ...prevDf };
+      const newAnswers = { ...answersRef.current };
+      let newAnswered = answeredRef.current;
+      let newScore = scoreRef.current;
+
+      questionsRef.current.forEach((q, i) => {
+        if (newDf[i]) return;
+        newDf[i] = true;
+        newAnswered++;
+        if (q.type === "填空题") {
+          const fillQ = q as any;
+          newAnswers[String(i)] = fillQ.answer.map(() => "");
+        } else {
+          newAnswers[String(i)] = -1;
+        }
+      });
+
+      setAnswers(newAnswers);
+      setAnswered(newAnswered);
+      persist(questionsRef.current, newAnswers, newScore, newAnswered);
+      return newDf;
+    });
+  }, []);
+
+  const resetAll = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    const q = shuffleQuestions(questionsData as Question[]);
+    setQuestions(q);
+    setScore(0);
+    setAnswered(0);
+    setAnswers({});
+    setDoneFlags({});
+  }, []);
+
+  return {
+    questions,
+    score,
+    answered,
+    total: TOTAL,
+    answers,
+    doneFlags,
+    pickAnswer,
+    submitFill,
+    submitAll,
+    resetAll,
+    hydrated,
+  };
+}

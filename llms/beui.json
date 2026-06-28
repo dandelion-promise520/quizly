@@ -1,0 +1,344 @@
+{
+  "name": "beUI",
+  "description": "Bespoke motion components for React.",
+  "site": "https://beui.dev",
+  "endpoints": {
+    "llms": "https://beui.dev/llms.txt",
+    "index": "https://beui.dev/r",
+    "shadcn_registry": "https://beui.dev/r/registry.json",
+    "shadcn_item": "https://beui.dev/r/{slug}.json",
+    "directory_registry": "https://beui.dev/registry.json",
+    "directory_item": "https://beui.dev/{slug}.json",
+    "detail": "https://beui.dev/r/{slug}",
+    "raw": "https://beui.dev/r/{slug}/raw"
+  },
+  "categories": [
+    {
+      "slug": "motion",
+      "name": "Components",
+      "description": "Bespoke motion primitives with shadcn-compatible registry endpoints."
+    },
+    {
+      "slug": "blocks",
+      "name": "Blocks",
+      "description": "Composed, product-ready widgets built from beUI motion primitives."
+    }
+  ],
+  "components": [
+    {
+      "slug": "tilt-card",
+      "name": "Tilt Card",
+      "description": "3D perspective tilt on hover with cursor-tracked glare.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/tilt-card",
+      "raw_url": "https://beui.dev/r/tilt-card/raw",
+      "page_url": "https://beui.dev/components/motion/tilt-card"
+    },
+    {
+      "slug": "button",
+      "name": "Button",
+      "description": "Spring-pressed Button plus StatefulButton (idle → loading → success / error) and MagneticButton.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/button",
+      "raw_url": "https://beui.dev/r/button/raw",
+      "page_url": "https://beui.dev/components/motion/button"
+    },
+    {
+      "slug": "marquee",
+      "name": "Marquee",
+      "description": "Infinite horizontal or vertical scroll with pause-on-hover.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/marquee",
+      "raw_url": "https://beui.dev/r/marquee/raw",
+      "page_url": "https://beui.dev/components/motion/marquee"
+    },
+    {
+      "slug": "tabs",
+      "name": "Tabs",
+      "description": "Pill, segment or underline tabs with a spring layoutId indicator.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/tabs",
+      "raw_url": "https://beui.dev/r/tabs/raw",
+      "page_url": "https://beui.dev/components/motion/tabs"
+    },
+    {
+      "slug": "switch",
+      "name": "Switch",
+      "description": "Toggle with a spring-driven thumb and press feedback.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/switch",
+      "raw_url": "https://beui.dev/r/switch/raw",
+      "page_url": "https://beui.dev/components/motion/switch"
+    },
+    {
+      "slug": "select",
+      "name": "Select",
+      "description": "Composable select primitives whose panel bouncily unfolds out of the trigger and separates, plus a Morph variant where the trigger grows into the panel via shared layout.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/select",
+      "raw_url": "https://beui.dev/r/select/raw",
+      "page_url": "https://beui.dev/components/motion/select"
+    },
+    {
+      "slug": "checkbox",
+      "name": "Checkbox",
+      "description": "Form choice control with a draw-on checkmark, spring press feedback and indeterminate state support.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/checkbox",
+      "raw_url": "https://beui.dev/r/checkbox/raw",
+      "page_url": "https://beui.dev/components/motion/checkbox"
+    },
+    {
+      "slug": "radio",
+      "name": "Radio Group",
+      "description": "Single-select choice control with a gliding layoutId indicator dot and spring press feedback.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/radio",
+      "raw_url": "https://beui.dev/r/radio/raw",
+      "page_url": "https://beui.dev/components/motion/radio"
+    },
+    {
+      "slug": "bottom-sheet",
+      "name": "Bottom Sheet",
+      "description": "Vaul-inspired draggable bottom sheet with snap points, inertia and glass surface.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/bottom-sheet",
+      "raw_url": "https://beui.dev/r/bottom-sheet/raw",
+      "page_url": "https://beui.dev/components/motion/bottom-sheet"
+    },
+    {
+      "slug": "shared-layout-bg",
+      "name": "Shared Layout Background",
+      "description": "A pill that glides between hovered items via motion's shared layout, with blur enter/exit.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/shared-layout-bg",
+      "raw_url": "https://beui.dev/r/shared-layout-bg/raw",
+      "page_url": "https://beui.dev/components/motion/shared-layout-bg"
+    },
+    {
+      "slug": "dock",
+      "name": "Dock",
+      "description": "macOS-style dock with grouped actions and a gliding active pill.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/dock",
+      "raw_url": "https://beui.dev/r/dock/raw",
+      "page_url": "https://beui.dev/components/motion/dock"
+    },
+    {
+      "slug": "tooltip",
+      "name": "Tooltip",
+      "description": "Hover or focus tooltip with blur enter/exit and spring spawn.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/tooltip",
+      "raw_url": "https://beui.dev/r/tooltip/raw",
+      "page_url": "https://beui.dev/components/motion/tooltip"
+    },
+    {
+      "slug": "morphing-modal",
+      "name": "Morphing Modal",
+      "description": "Family-app-style modal. A single panel that morphs its height as you navigate between inner views, with blur cross-fade on content.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/morphing-modal",
+      "raw_url": "https://beui.dev/r/morphing-modal/raw",
+      "page_url": "https://beui.dev/components/motion/morphing-modal"
+    },
+    {
+      "slug": "text-animation",
+      "name": "Text Animation",
+      "description": "Animated text primitives for reveal sequences, shimmer loading states and letter-cascade swaps.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/text-animation",
+      "raw_url": "https://beui.dev/r/text-animation/raw",
+      "page_url": "https://beui.dev/components/motion/text-animation"
+    },
+    {
+      "slug": "number",
+      "name": "Number Animation",
+      "description": "Animated number primitives for count-up values and rolling digit tickers.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/number",
+      "raw_url": "https://beui.dev/r/number/raw",
+      "page_url": "https://beui.dev/components/motion/number"
+    },
+    {
+      "slug": "animated-badge",
+      "name": "Animated Badge",
+      "description": "Status badge with animated state icons, pulse feedback and compact size variants.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/animated-badge",
+      "raw_url": "https://beui.dev/r/animated-badge/raw",
+      "page_url": "https://beui.dev/components/motion/animated-badge"
+    },
+    {
+      "slug": "action-swap",
+      "name": "Action Swap",
+      "description": "CTA button and slot primitives for swapping text and icons with blur motion.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/action-swap",
+      "raw_url": "https://beui.dev/r/action-swap/raw",
+      "page_url": "https://beui.dev/components/motion/action-swap"
+    },
+    {
+      "slug": "animated-toast-stack",
+      "name": "Animated Toast Stack",
+      "description": "Stacked toasts with status morphs, swipe dismissal, actions and layout-aware motion.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/animated-toast-stack",
+      "raw_url": "https://beui.dev/r/animated-toast-stack/raw",
+      "page_url": "https://beui.dev/components/motion/animated-toast-stack"
+    },
+    {
+      "slug": "theme-toggle",
+      "name": "Theme Toggle",
+      "description": "Theme toggle button with a full-page rectangle clip-path reveal via the View Transition API.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/theme-toggle",
+      "raw_url": "https://beui.dev/r/theme-toggle/raw",
+      "page_url": "https://beui.dev/components/motion/theme-toggle"
+    },
+    {
+      "slug": "bouncy-accordion",
+      "name": "Bouncy Accordion",
+      "description": "Single-open accordion with weighted spring layout, icon rows and reduced-motion-safe content reveals.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/bouncy-accordion",
+      "raw_url": "https://beui.dev/r/bouncy-accordion/raw",
+      "page_url": "https://beui.dev/components/motion/bouncy-accordion"
+    },
+    {
+      "slug": "drawer",
+      "name": "Drawer",
+      "description": "Side panel that slides in from the left or right with a spring, backdrop blur, body scroll lock and esc-to-close.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/drawer",
+      "raw_url": "https://beui.dev/r/drawer/raw",
+      "page_url": "https://beui.dev/components/motion/drawer"
+    },
+    {
+      "slug": "scroll-animation",
+      "name": "Scroll Animation",
+      "description": "Scroll-driven motion: a Lenis smooth-scroll provider and a reading-progress indicator that reads from it.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/scroll-animation",
+      "raw_url": "https://beui.dev/r/scroll-animation/raw",
+      "page_url": "https://beui.dev/components/motion/scroll-animation"
+    },
+    {
+      "slug": "range-slider",
+      "name": "Range Slider",
+      "description": "Range slider with tick dots and a bouncy vertical-bar thumb that glides between snapped steps; drag and keyboard control, reduced-motion safe.",
+      "category": "motion",
+      "detail_url": "https://beui.dev/r/range-slider",
+      "raw_url": "https://beui.dev/r/range-slider/raw",
+      "page_url": "https://beui.dev/components/motion/range-slider"
+    },
+    {
+      "slug": "swap",
+      "name": "Multi-chain Swap",
+      "description": "Cross-chain swap widget with chain + token selectors, morphing views, animated flip and quote.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/swap",
+      "raw_url": "https://beui.dev/r/swap/raw",
+      "page_url": "https://beui.dev/components/blocks/swap"
+    },
+    {
+      "slug": "dynamic-island",
+      "name": "Dynamic Island",
+      "description": "iOS-style island pill that morphs between live activity views with bouncy shell resize and blur crossfades.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/dynamic-island",
+      "raw_url": "https://beui.dev/r/dynamic-island/raw",
+      "page_url": "https://beui.dev/components/blocks/dynamic-island"
+    },
+    {
+      "slug": "command-palette",
+      "name": "Command Palette",
+      "description": "⌘K palette with fuzzy filter, spring-animated active row and glass surface.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/command-palette",
+      "raw_url": "https://beui.dev/r/command-palette/raw",
+      "page_url": "https://beui.dev/components/blocks/command-palette"
+    },
+    {
+      "slug": "expandable-action-bar",
+      "name": "Expandable Action Bar",
+      "description": "Compact icon actions that expand into labeled controls on hover or focus with shared layout motion.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/expandable-action-bar",
+      "raw_url": "https://beui.dev/r/expandable-action-bar/raw",
+      "page_url": "https://beui.dev/components/blocks/expandable-action-bar"
+    },
+    {
+      "slug": "overflow-actions",
+      "name": "Overflow Actions",
+      "description": "Connected pill rail for primary actions that springs open to reveal extra controls.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/overflow-actions",
+      "raw_url": "https://beui.dev/r/overflow-actions/raw",
+      "page_url": "https://beui.dev/components/blocks/overflow-actions"
+    },
+    {
+      "slug": "expandable-tabs",
+      "name": "Expandable Tabs",
+      "description": "Icon tab bar where the active tab expands to a labelled pill, with a panel above that morphs height and slides content direction-aware on switch.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/expandable-tabs",
+      "raw_url": "https://beui.dev/r/expandable-tabs/raw",
+      "page_url": "https://beui.dev/components/blocks/expandable-tabs"
+    },
+    {
+      "slug": "swipeable-list",
+      "name": "Swipeable List",
+      "description": "Mobile-style list rows that swipe left or right to reveal contextual action buttons.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/swipeable-list",
+      "raw_url": "https://beui.dev/r/swipeable-list/raw",
+      "page_url": "https://beui.dev/components/blocks/swipeable-list"
+    },
+    {
+      "slug": "file-upload",
+      "name": "File Upload",
+      "description": "Drag-and-drop upload queue with progress rows, retry/remove actions and reduced-motion-safe state changes.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/file-upload",
+      "raw_url": "https://beui.dev/r/file-upload/raw",
+      "page_url": "https://beui.dev/components/blocks/file-upload"
+    },
+    {
+      "slug": "prediction-market",
+      "name": "Prediction Market",
+      "description": "Prediction market trade ticket with buy/sell modes, outcome prices, rolling amount entry, quick add chips and trade states.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/prediction-market",
+      "raw_url": "https://beui.dev/r/prediction-market/raw",
+      "page_url": "https://beui.dev/components/blocks/prediction-market"
+    },
+    {
+      "slug": "otp-input",
+      "name": "OTP Input",
+      "description": "One-time-code input with a gliding focus ring, digits that roll in per slot, error shake and a success check draw.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/otp-input",
+      "raw_url": "https://beui.dev/r/otp-input/raw",
+      "page_url": "https://beui.dev/components/blocks/otp-input"
+    },
+    {
+      "slug": "bloom-menu",
+      "name": "Bloom Menu",
+      "description": "A button that morphs open into a menu and blooms iris-out from the center, the grid revealing in every direction with radially staggered items.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/bloom-menu",
+      "raw_url": "https://beui.dev/r/bloom-menu/raw",
+      "page_url": "https://beui.dev/components/blocks/bloom-menu"
+    },
+    {
+      "slug": "not-found",
+      "name": "404 / Not Found",
+      "description": "Animated 404 pages in five styles: glitch scramble, magnetic digits, cursor spotlight, a fanning card stack and a typed terminal.",
+      "category": "blocks",
+      "detail_url": "https://beui.dev/r/not-found",
+      "raw_url": "https://beui.dev/r/not-found/raw",
+      "page_url": "https://beui.dev/components/blocks/not-found"
+    }
+  ]
+}
