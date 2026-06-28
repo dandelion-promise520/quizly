@@ -26,19 +26,15 @@ export default function QuestionCard({
   onSubmitFill,
 }: QuestionCardProps) {
   const isCorrect = question.type === "填空题"
-    ? userAnswers?.every((a, i) => a === (question as any).answer[i])
-    : selectedIdx === (question as any).correctShuffledIdx;
-
-  const isWrong = question.type === "填空题"
-    ? userAnswers?.some((a, i) => a !== (question as any).answer[i])
-    : selectedIdx !== (question as any).correctShuffledIdx;
+    ? userAnswers?.every((a, i) => a === (question as FillQuestion).answer[i])
+    : selectedIdx === (question as ChoiceQuestion).correctShuffledIdx;
 
   let feedbackType: "correct" | "wrong" | "unanswered" = "wrong";
   let feedbackMsg = "";
 
   if (question.type === "填空题") {
     if (userAnswers) {
-      const fillQ = question as any;
+      const fillQ = question as FillQuestion;
       let blankCorrect = 0;
       for (let b = 0; b < fillQ.answer.length; b++) {
         if (userAnswers[b] === fillQ.answer[b]) blankCorrect++;
@@ -62,7 +58,7 @@ export default function QuestionCard({
         feedbackType = "correct";
         feedbackMsg = `<strong>回答正确。</strong> 正确答案：${question.answer}`;
       } else {
-        const opts = (question as any).shuffledOptions || question.options;
+        const opts = question.shuffledOptions || question.options;
         const label = selectedIdx >= 0 ? opts[selectedIdx]?.label : "?";
         feedbackType = "wrong";
         feedbackMsg = `<strong>回答错误。</strong> 你选择了 ${label}，正确答案是 ${question.answer}`;

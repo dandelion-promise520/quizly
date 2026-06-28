@@ -1,6 +1,6 @@
 "use client";
 
-import type { Question, Option, ChoiceQuestion, FillQuestion } from "@/lib/types";
+import type { Question, Option, FillQuestion } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { Button, StatefulButton } from "./motion/button";
 import { Tabs, TabsList, TabsTrigger } from "./motion/tabs";
@@ -55,6 +55,7 @@ export default function AdminQuestionEditor({
     if ("options" in question) d.options = question.options;
     d.answer = question.answer;
     if ("blanks" in question) d.blanks = (question as FillQuestion).blanks;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(d);
   }, [question]);
 
@@ -158,7 +159,7 @@ export default function AdminQuestionEditor({
         {/* Type selector */}
         <Tabs
           value={draft.type}
-          onValueChange={(val: any) => setDraft((d) => ({ ...d, type: val }))}
+          onValueChange={(val) => setDraft((d) => ({ ...d, type: val as Draft["type"] }))}
           variant="segment"
           className="w-[280px]"
         >

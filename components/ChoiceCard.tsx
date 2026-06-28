@@ -18,8 +18,8 @@ export default function ChoiceCard({
   selectedIdx,
   onPick,
 }: ChoiceCardProps) {
-  const opts = (question as any).shuffledOptions || question.options;
-  const correctIdx = (question as any).correctShuffledIdx;
+  const opts = question.shuffledOptions || question.options;
+  const correctIdx = question.correctShuffledIdx;
 
   return (
     <RadioGroup

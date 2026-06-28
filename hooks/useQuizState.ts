@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Question, SavedAnswer } from "@/lib/types";
+import type { Question, SavedAnswer, ChoiceQuestion, FillQuestion } from "@/lib/types";
 
 const STORAGE_KEY = "db_quiz_progress";
 const PTS = 5;
@@ -53,9 +53,9 @@ function persist(questions: Question[], answers: SavedAnswer, score: number, ans
     questions: questions.map((q) => ({
       type: q.type, text: q.text,
       options: q.type === "填空题" ? [] : q.options,
-      blanks: (q as any).blanks,
-      shuffledOptions: (q as any).shuffledOptions,
-      correctShuffledIdx: (q as any).correctShuffledIdx,
+      blanks: "blanks" in q ? q.blanks : undefined,
+      shuffledOptions: "shuffledOptions" in q ? q.shuffledOptions : undefined,
+      correctShuffledIdx: "correctShuffledIdx" in q ? q.correctShuffledIdx : undefined,
       answer: q.answer,
     })),
     answers,
@@ -97,6 +97,7 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
   useEffect(() => { answersRef.current = answers; }, [answers]);
 
   // Hydration guard
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setHydrated(true); }, []);
 
   // Init: shuffle or restore
@@ -113,11 +114,12 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
       q = (saved.questions as Question[]).map((question) => {
         const item = { ...question };
         if (item.type === "填空题") {
-          if (!Array.isArray(item.answer)) {
-            item.answer = typeof item.answer === "string" ? [item.answer] : [];
+          const fItem = item as unknown as { answer: unknown; blanks: unknown };
+          if (!Array.isArray(fItem.answer)) {
+            fItem.answer = typeof fItem.answer === "string" ? [fItem.answer] : [];
           }
-          if (!Array.isArray((item as any).blanks)) {
-            (item as any).blanks = typeof (item as any).blanks === "string" ? [(item as any).blanks] : [];
+          if (!Array.isArray(fItem.blanks)) {
+            fItem.blanks = typeof fItem.blanks === "string" ? [fItem.blanks] : [];
           }
         }
         return item;
@@ -129,18 +131,20 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
       // Fill missing shuffle data
       initialQuestions.forEach((orig, i) => {
         if (i >= q.length) return;
-        if (!(q[i] as any).shuffledOptions) {
-          if (orig.type !== "填空题") {
+        const targetQ = q[i];
+        if (targetQ.type !== "填空题" && orig.type !== "填空题") {
+          const choiceQ = targetQ as ChoiceQuestion;
+          if (!choiceQ.shuffledOptions) {
             const correctText = orig.options.find((o) => o.label === orig.answer)?.text;
             if (correctText) {
               const shuffledByText = shuffle(orig.options.map((o) => o.text));
-              (q[i] as any).shuffledOptions = shuffledByText.map((text, idx) => ({
+              choiceQ.shuffledOptions = shuffledByText.map((text, idx) => ({
                 label: String.fromCharCode(65 + idx), text,
               }));
-              (q[i] as any).correctShuffledIdx = (q[i] as any).shuffledOptions!.findIndex(
-                (o: { text: string }) => o.text === correctText
+              choiceQ.correctShuffledIdx = choiceQ.shuffledOptions.findIndex(
+                (o) => o.text === correctText
               );
-              (q[i] as any).answer = (q[i] as any).shuffledOptions![(q[i] as any).correctShuffledIdx!].label;
+              choiceQ.answer = choiceQ.shuffledOptions[choiceQ.correctShuffledIdx].label;
             }
           }
         }
@@ -152,6 +156,7 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
     const df: Record<number, boolean> = {};
     Object.keys(a).forEach((key) => { df[parseInt(key, 10)] = true; });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuestions(q);
     setScore(s);
     setAnswered(an);
@@ -164,7 +169,7 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
       if (prev[qi]) return prev;
       const q = questionsRef.current[qi];
       if (q.type === "填空题") return prev;
-      const isRight = oi === (q as any).correctShuffledIdx;
+      const isRight = oi === (q as ChoiceQuestion).correctShuffledIdx;
       setScore((s) => s + (isRight ? PTS : 0));
       setAnswered((a) => a + 1);
       setAnswers((prevA) => {
@@ -181,7 +186,7 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
       if (prev[qi]) return prev;
       const q = questionsRef.current[qi];
       if (q.type !== "填空题") return prev;
-      const fillQ = q as any;
+      const fillQ = q as FillQuestion;
       let blankCorrect = 0;
       for (let b = 0; b < fillQ.answer.length; b++) {
         if (userAnswers[b] === fillQ.answer[b]) blankCorrect++;
@@ -203,14 +208,14 @@ export function useQuizState(initialQuestions: Question[]): QuizHookReturn {
       const newDf = { ...prevDf };
       const newAnswers = { ...answersRef.current };
       let newAnswered = answeredRef.current;
-      let newScore = scoreRef.current;
+      const newScore = scoreRef.current;
 
       questionsRef.current.forEach((q, i) => {
         if (newDf[i]) return;
         newDf[i] = true;
         newAnswered++;
         if (q.type === "填空题") {
-          const fillQ = q as any;
+          const fillQ = q as FillQuestion;
           newAnswers[String(i)] = fillQ.answer.map(() => "");
         } else {
           newAnswers[String(i)] = -1;

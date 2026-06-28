@@ -1,4 +1,3 @@
-import type { Question } from "@/lib/types";
 
 interface HeaderProps {
   total: number;

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Question, SavedAnswer } from "@/lib/types";
+import type { Question } from "@/lib/types";
 import Header from "./Header";
 import Scoreboard from "./Scoreboard";
 import ProgressBar from "./ProgressBar";

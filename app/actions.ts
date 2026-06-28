@@ -9,7 +9,7 @@ export async function saveQuestionsToDisk(questions: Question[]) {
     const filePath = path.join(process.cwd(), "lib", "questions.json");
     await fs.writeFile(filePath, JSON.stringify(questions, null, 2), "utf-8");
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Failed to save to disk" };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to save to disk" };
   }
 }

@@ -2,6 +2,7 @@
 
 import type { Question } from "@/lib/types";
 import { useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminQuestionEditor from "@/components/AdminQuestionEditor";
 import { Button } from "@/components/motion/button";
@@ -165,12 +166,12 @@ export default function AdminDashboard({ initialQuestions }: AdminDashboardProps
 
           <div className="flex-1" />
 
-          <a
+          <Link
             href="/"
             className="text-sm text-teal-600 hover:text-teal-700 font-semibold"
           >
             ← 返回答题页面
-          </a>
+          </Link>
         </div>
 
         {/* Editor */}

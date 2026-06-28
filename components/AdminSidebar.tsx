@@ -1,6 +1,6 @@
 "use client";
 
-import type { Question } from "@/lib/types";
+import type { Question, Option } from "@/lib/types";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./motion/tabs";
 
@@ -34,10 +34,12 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
-  const filtered = questions.filter((q, i) => {
+  const filtered = questions.filter((q) => {
     if (typeFilter && q.type !== typeFilter) return false;
     if (search) {
-      const haystack = [q.text, ...(q as any).options?.map((o: any) => o.text) ?? [], ...(q as any).blanks ?? []].join(" ");
+      const options = "options" in q ? (q.options as Option[]) : [];
+      const blanks = "blanks" in q ? (q.blanks as string[]) : [];
+      const haystack = [q.text, ...options.map((o) => o.text), ...blanks].join(" ");
       return haystack.toLowerCase().includes(search.toLowerCase());
     }
     return true;
@@ -79,7 +81,7 @@ export default function AdminSidebar({
 
       {/* List */}
       <div className="flex-1 overflow-y-auto">
-        {filtered.map((q, idx) => {
+        {filtered.map((q) => {
           const realIdx = questions.indexOf(q);
           const isSelected = selectedId === realIdx;
           const needConfirm = confirmDelete === realIdx;
