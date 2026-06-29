@@ -35,6 +35,7 @@ COPY --from=builder --chown=bun:bun /app/node_modules ./node_modules
 COPY --from=builder --chown=bun:bun /app/.next ./.next
 COPY --from=builder --chown=bun:bun /app/package.json ./package.json
 COPY --from=builder --chown=bun:bun /app/prisma ./prisma
+COPY --from=builder --chown=bun:bun /app/prisma.config.ts ./prisma.config.ts
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
