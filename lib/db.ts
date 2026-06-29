@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import path from "path";
 import type { Question } from "./types";
@@ -13,8 +13,8 @@ export async function getQuestions(): Promise<Question[]> {
 
   const questions = await prisma.question.findMany({
     include: {
-      options: true,
-      blanks: true,
+      Option: true,
+      Blank: true,
     },
     orderBy: {
       id: "asc",
@@ -27,7 +27,7 @@ export async function getQuestions(): Promise<Question[]> {
     const text = q.text;
 
     if (type === "填空题") {
-      const sortedBlanks = [...q.blanks].sort((a, b) => a.order - b.order);
+      const sortedBlanks = [...q.Blank].sort((a, b) => a.order - b.order);
       const textArr = sortedBlanks.map((b) => b.text);
       return {
         id,
@@ -37,7 +37,7 @@ export async function getQuestions(): Promise<Question[]> {
         answer: textArr,
       };
     } else {
-      const optionsArr = q.options.map((o) => ({
+      const optionsArr = q.Option.map((o) => ({
         label: o.label,
         text: o.text,
       }));
@@ -77,8 +77,8 @@ export async function saveQuestionsToDatabase(questions: Question[]): Promise<Qu
               type: q.type,
               text: q.text,
               answer: "",
-              options: { deleteMany: {} },
-              blanks: {
+              Option: { deleteMany: {} },
+              Blank: {
                 deleteMany: {},
                 create: q.blanks.map((b, index) => ({
                   text: b,
@@ -94,8 +94,8 @@ export async function saveQuestionsToDatabase(questions: Question[]): Promise<Qu
               type: q.type,
               text: q.text,
               answer: q.answer,
-              blanks: { deleteMany: {} },
-              options: {
+              Blank: { deleteMany: {} },
+              Option: {
                 deleteMany: {},
                 create: q.options.map((o) => ({
                   label: o.label,
@@ -112,7 +112,7 @@ export async function saveQuestionsToDatabase(questions: Question[]): Promise<Qu
               type: q.type,
               text: q.text,
               answer: "",
-              blanks: {
+              Blank: {
                 create: q.blanks.map((b, index) => ({
                   text: b,
                   order: index,
@@ -126,7 +126,7 @@ export async function saveQuestionsToDatabase(questions: Question[]): Promise<Qu
               type: q.type,
               text: q.text,
               answer: q.answer,
-              options: {
+              Option: {
                 create: q.options.map((o) => ({
                   label: o.label,
                   text: o.text,
