@@ -8,8 +8,7 @@ RUN sed -i 's/https/http/g' /etc/apk/repositories && \
 WORKDIR /app
 
 COPY package.json bun.lock ./
-RUN bun config set registry https://registry.npmmirror.com && \
-    bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --registry https://registry.npmmirror.com
 
 # Build the source code
 FROM base AS builder
@@ -18,8 +17,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
-RUN bun config set registry https://registry.npmmirror.com && \
-    bunx prisma generate
+RUN bunx prisma generate
 
 # Build Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
