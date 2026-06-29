@@ -15,6 +15,10 @@ FROM base AS builder
 WORKDIR /app
 ENV NODE_ENV=production
 ENV CI=1
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_DISABLE_ESLINT=1
+ENV NEXT_DISABLE_TYPECHECK=1
+ENV NEXT_PRIVATE_BUILD_WORKER=1
 ENV DATABASE_URL="file:./quiz.db"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -23,7 +27,6 @@ COPY . .
 RUN bunx prisma generate
 
 # Build Next.js
-ENV NEXT_TELEMETRY_DISABLED=1
 RUN bun run build
 
 # Production runner stage
