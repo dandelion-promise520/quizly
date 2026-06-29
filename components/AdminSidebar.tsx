@@ -18,10 +18,10 @@ interface AdminSidebarProps {
 
 const TYPE_LABELS: Record<string, string> = {
   "": "全部",
-  "单选题": "单选",
-  "多选题": "多选",
-  "判断题": "判断",
-  "填空题": "填空",
+  单选题: "单选",
+  多选题: "多选",
+  判断题: "判断",
+  填空题: "填空",
 };
 
 export default function AdminSidebar({
@@ -43,7 +43,9 @@ export default function AdminSidebar({
     if (search) {
       const options = "options" in q ? (q.options as Option[]) : [];
       const blanks = "blanks" in q ? (q.blanks as string[]) : [];
-      const haystack = [q.text, ...options.map((o) => o.text), ...blanks].join(" ");
+      const haystack = [q.text, ...options.map((o) => o.text), ...blanks].join(
+        " ",
+      );
       return haystack.toLowerCase().includes(search.toLowerCase());
     }
     return true;
@@ -71,7 +73,11 @@ export default function AdminSidebar({
         >
           <TabsList className="w-full justify-between">
             {Object.entries(TYPE_LABELS).map(([val, label]) => (
-              <TabsTrigger key={val} value={val} className="flex-1 text-xs px-1 py-1">
+              <TabsTrigger
+                key={val}
+                value={val}
+                className="flex-1 text-xs px-2.5 py-1.5"
+              >
                 {label}
               </TabsTrigger>
             ))}
@@ -84,12 +90,16 @@ export default function AdminSidebar({
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto bg-white relative z-0" onMouseLeave={() => setHoveredIdx(null)}>
+      <div
+        className="flex-1 overflow-y-auto bg-white relative z-0"
+        onMouseLeave={() => setHoveredIdx(null)}
+      >
         {filtered.map((q) => {
           const realIdx = questions.indexOf(q);
           const isSelected = selectedId === realIdx;
           const needConfirm = confirmDelete === realIdx;
-          const preview = q.text.length > 40 ? q.text.slice(0, 40) + "…" : q.text;
+          const preview =
+            q.text.length > 40 ? q.text.slice(0, 40) + "…" : q.text;
 
           return (
             <div
@@ -124,7 +134,9 @@ export default function AdminSidebar({
               <span className="relative z-10 text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">
                 {q.type}
               </span>
-              <span className="relative z-10 flex-1 text-sm text-slate-700 truncate">{preview}</span>
+              <span className="relative z-10 flex-1 text-sm text-slate-700 truncate">
+                {preview}
+              </span>
 
               <button
                 className={[
