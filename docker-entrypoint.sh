@@ -3,8 +3,15 @@ set -e
 
 if [ -n "$DATABASE_URL" ]; then
   echo "Applying Prisma migrations..."
+  max_attempts=30
+  attempt=0
   until bunx prisma migrate deploy >/dev/null 2>&1; do
-    echo "Waiting for database to become available..."
+    attempt=$((attempt + 1))
+    if [ "$attempt" -ge "$max_attempts" ]; then
+      echo "ERROR: database not ready after $attempt attempts. Check DATABASE_URL and database connectivity."
+      exit 1
+    fi
+    echo "Waiting for database to become available (attempt $attempt/$max_attempts)..."
     sleep 2
   done
 else
