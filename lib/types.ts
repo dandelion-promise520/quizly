@@ -4,6 +4,7 @@ export interface Option {
 }
 
 export interface ChoiceQuestion {
+  id?: number;
   type: "单选题" | "判断题";
   text: string;
   options: Option[];
@@ -13,6 +14,7 @@ export interface ChoiceQuestion {
 }
 
 export interface FillQuestion {
+  id?: number;
   type: "填空题";
   text: string;
   blanks: string[]; // correct answers per blank

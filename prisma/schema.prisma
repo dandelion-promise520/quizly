@@ -1,0 +1,32 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Question {
+  id      Int      @id @default(autoincrement())
+  type    String   // "单选题" | "判断题" | "填空题"
+  text    String
+  answer  String   // Store choice/judgement answer. Empty for fill.
+  options Option[]
+  blanks  Blank[]
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  label      String
+  text       String
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Blank {
+  id         Int      @id @default(autoincrement())
+  text       String
+  order      Int
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}

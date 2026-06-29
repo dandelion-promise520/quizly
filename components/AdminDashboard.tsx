@@ -23,11 +23,13 @@ export default function AdminDashboard({ initialQuestions }: AdminDashboardProps
   const saveToDisk = async (newQuestions: Question[]) => {
     try {
       const data = await saveQuestionsToDisk(newQuestions);
-      if (!data.success) {
-        console.error("Failed to save to disk:", data.error);
+      if (data.success && data.questions) {
+        setQuestions(data.questions);
+      } else if (!data.success) {
+        console.error("Failed to save to database:", data.error);
       }
     } catch (err) {
-      console.error("Network error when saving to disk:", err);
+      console.error("Network error when saving to database:", err);
     }
   };
 

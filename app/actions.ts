@@ -1,15 +1,14 @@
 "use server";
 
-import fs from "fs/promises";
-import path from "path";
+import { saveQuestionsToDatabase } from "@/lib/db";
 import type { Question } from "@/lib/types";
 
 export async function saveQuestionsToDisk(questions: Question[]) {
   try {
-    const filePath = path.join(process.cwd(), "lib", "questions.json");
-    await fs.writeFile(filePath, JSON.stringify(questions, null, 2), "utf-8");
-    return { success: true };
+    const updated = await saveQuestionsToDatabase(questions);
+    return { success: true, questions: updated };
   } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : "Failed to save to disk" };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to save to database" };
   }
 }
+
