@@ -34,7 +34,8 @@ export default function ChoiceCard({
         className="pl-0 gap-1.5"
       >
         {opts.map((opt: { label: string; text: string }, oi: number) => {
-          let optCls = "relative isolate flex items-center gap-3 p-3 my-[2px] border rounded-xl cursor-pointer select-none bg-white transition-all duration-200";
+          let optCls =
+            "relative isolate flex items-center gap-3 p-3 my-[2px] border rounded-xl cursor-pointer select-none bg-white transition-all duration-200";
 
           if (done) {
             optCls += " cursor-default pointer-events-none border-slate-200";
@@ -62,7 +63,7 @@ export default function ChoiceCard({
               {oi === hoveredIdx && oi !== selectedIdx && !done && (
                 <motion.span
                   layoutId={`choice-hover-${index}`}
-                  className="absolute inset-0 z-0 rounded-xl bg-slate-100/70"
+                  className="absolute inset-0 z-[-1] rounded-xl bg-slate-100/70"
                   transition={
                     reduce
                       ? { duration: 0 }
@@ -79,7 +80,7 @@ export default function ChoiceCard({
               {oi === selectedIdx && !done && (
                 <motion.span
                   layoutId={`choice-selected-${index}`}
-                  className="absolute inset-0 z-0 rounded-xl bg-teal-50/70"
+                  className="absolute inset-0 z-[-1] rounded-xl bg-teal-50/70"
                   transition={
                     reduce
                       ? { duration: 0 }
@@ -96,7 +97,9 @@ export default function ChoiceCard({
                 value={String(oi)}
                 disabled={done}
                 isCorrectAnswer={done && oi === correctIdx}
-                isWrongSelection={done && oi === selectedIdx && oi !== correctIdx}
+                isWrongSelection={
+                  done && oi === selectedIdx && oi !== correctIdx
+                }
                 className="pointer-events-none relative z-10"
               />
               <span className="relative z-10 text-[14.5px] text-slate-900 leading-relaxed">
