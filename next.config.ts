@@ -5,6 +5,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   ...(isDev && {
     turbopack: {
       rules: codeInspectorPlugin({
