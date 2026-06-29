@@ -13,7 +13,7 @@ export default function Header({ total }: HeaderProps) {
         综合测试
       </h1>
       <p className="text-sm text-slate-500 max-w-[480px] mx-auto">
-        共 {total} 题 · 每题 5 分 · 满分 205 分 · 题目顺序与选项均已随机打乱
+        共 {total} 题 · 每题 5 分 · 满分 {total * 5} 分 · 题目顺序与选项均已随机打乱
       </p>
     </header>
   );

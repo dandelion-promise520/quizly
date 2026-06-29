@@ -47,7 +47,7 @@ export default function QuizPage({ initialQuestions }: QuizPageProps) {
       <ProgressBar answered={answered} total={total} />
 
       <main className="max-w-[720px] mx-auto px-5 py-8 pb-20">
-        {allDone && <ResultBanner score={score} total={205} />}
+        {allDone && <ResultBanner score={score} total={total * 5} />}
 
         <div className="text-sm font-semibold text-slate-900 mt-11 mb-5 pb-2.5 border-b-2 border-teal-600 inline-block">
           选择题

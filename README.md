@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quizly
 
-## Getting Started
+这是一个基于 Next.js 和 Bun 开发的测验系统。
 
-First, run the development server:
+## 本地开发调试
+
+如果你想在本地开发和调试本项目，请确保已安装 Bun。
+
+### 1. 安装依赖
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+### 2. 启动开发服务器
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+启动后，在浏览器中访问 [http://localhost:3000](http://localhost:3000) 即可查看效果。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Docker 部署与运行
 
-## Learn More
+如果你有 Docker 环境，可以直接使用 Docker Compose 快速构建并启动本服务。
 
-To learn more about Next.js, take a look at the following resources:
+### 1. 快速启动
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+在项目根目录下执行以下命令：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# 构建镜像并后台启动容器
+docker compose up -d --build
+```
 
-## Deploy on Vercel
+服务启动后，可以通过以下地址访问：
+- **访问地址**: `http://localhost:628`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. 常用命令
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# 查看容器运行日志
+docker compose logs -f
+
+# 停止服务并移除容器
+docker compose down
+
+# 重新编译构建镜像
+docker compose build --no-cache
+```
+
+### 3. 数据持久化
+容器启动时会自动初始化并更新 SQLite 数据库。内置的 SQLite 数据库文件会自动挂载至 Docker 命名卷 `quiz-db-data` 中（映射到容器内的 `/app/data/quiz.db`），这能确保即使重建或重启容器，你的数据和题目也不会丢失。

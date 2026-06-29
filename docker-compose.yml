@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "628:628"
+    volumes:
+      - quiz-db-data:/app/data
+    environment:
+      - PORT=628
+      - NODE_ENV=production
+    restart: always
+
+volumes:
+  quiz-db-data:
