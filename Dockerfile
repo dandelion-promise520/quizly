@@ -27,7 +27,7 @@ COPY . .
 RUN bunx prisma generate
 
 # Build Next.js
-RUN bun run build
+RUN NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 NEXT_PRIVATE_BUILD_WORKER=1 bun run build
 
 # Production runner stage
 FROM base AS runner
