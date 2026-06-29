@@ -2,11 +2,13 @@ FROM oven/bun:1.2-alpine AS base
 
 # Install dependencies
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && \
+    apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun config set registry https://registry.npmmirror.com && \
+    bun install --frozen-lockfile
 
 # Build the source code
 FROM base AS builder
@@ -15,7 +17,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
-RUN bunx prisma generate
+RUN bun config set registry https://registry.npmmirror.com && \
+    bunx prisma generate
 
 # Build Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
