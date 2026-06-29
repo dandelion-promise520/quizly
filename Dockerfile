@@ -1,16 +1,12 @@
 FROM oven/bun:1-alpine AS base
 
-# Install dependencies
-FROM base AS deps
-RUN sed -i 's/https/http/g' /etc/apk/repositories && \
-    sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
-    apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+FROM base AS deps
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --registry https://registry.npmmirror.com
 
-# Build the source code
 FROM base AS builder
 WORKDIR /app
 ENV NODE_ENV=production
@@ -19,42 +15,28 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_DISABLE_ESLINT=1
 ENV NEXT_DISABLE_TYPECHECK=1
 ENV NEXT_PRIVATE_BUILD_WORKER=1
-ENV DATABASE_URL="file:./quiz.db"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
 RUN bunx prisma generate
+RUN bun run build
 
-# Build Next.js
-RUN NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 NEXT_PRIVATE_BUILD_WORKER=1 bun run build
-
-# Production runner stage
 FROM base AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create app directory and change owner to bun
-RUN mkdir -p /app/data && chown -R bun:bun /app
-
-# Copy built artifacts and dependencies
+RUN chown -R bun:bun /app
 COPY --from=builder --chown=bun:bun /app/public ./public
 COPY --from=builder --chown=bun:bun /app/node_modules ./node_modules
 COPY --from=builder --chown=bun:bun /app/.next ./.next
 COPY --from=builder --chown=bun:bun /app/package.json ./package.json
 COPY --from=builder --chown=bun:bun /app/prisma ./prisma
-
-# Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 USER bun
-
 EXPOSE 628
 ENV PORT=628
-ENV HOSTNAME="0.0.0.0"
-
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["bun", "run", "start"]

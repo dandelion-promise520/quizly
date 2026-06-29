@@ -1,10 +1,14 @@
 # Quizly
 
-这是一个基于 Next.js 和 Bun 开发的测验系统。
+Quizly 是一个基于 Next.js、Bun 和 Prisma 的在线测验系统。
 
-## 本地开发调试
+## 先决条件
 
-如果你想在本地开发和调试本项目，请确保已安装 Bun。
+- Bun
+- Docker / Docker Compose
+- PostgreSQL
+
+## 本地开发
 
 ### 1. 安装依赖
 
@@ -12,44 +16,63 @@
 bun install
 ```
 
-### 2. 启动开发服务器
+### 2. 配置数据库连接
+
+在项目根目录创建一个 `.env` 文件，并设置你的 PostgreSQL 连接：
+
+```env
+DATABASE_URL=postgresql://quizly:quizly@localhost:5432/quizly
+```
+
+### 3. 启动开发服务器
 
 ```bash
 bun dev
 ```
 
-启动后，在浏览器中访问 [http://localhost:3000](http://localhost:3000) 即可查看效果。
+浏览器访问：
 
----
+- `http://localhost:3000`
 
-## Docker 部署与运行
-
-如果你有 Docker 环境，可以直接使用 Docker Compose 快速构建并启动本服务。
-
-### 1. 快速启动
-
-在项目根目录下执行以下命令：
+## 生产构建
 
 ```bash
-# 构建镜像并后台启动容器
+bun install
+bun run build
+bun run start
+```
+
+## Docker 部署
+
+项目提供 Docker Compose 配置，仅构建并运行 Web 服务。请确保服务器上已有可用 PostgreSQL 实例。
+
+### 1. 配置数据库地址
+
+在项目根目录创建一个 `.env` 文件：
+
+```env
+DATABASE_URL=postgresql://quizly:quizly@your-postgres-host:5432/quizly
+```
+
+### 2. 构建并启动
+
+```bash
 docker compose up -d --build
 ```
 
-服务启动后，可以通过以下地址访问：
-- **访问地址**: `http://localhost:628`
+### 3. 访问服务
 
-### 2. 常用命令
+- `http://localhost:628`
+
+### 4. 日志与停止
 
 ```bash
-# 查看容器运行日志
 docker compose logs -f
-
-# 停止服务并移除容器
 docker compose down
-
-# 重新编译构建镜像
-docker compose build --no-cache
 ```
 
-### 3. 数据持久化
-容器启动时会自动初始化并更新 SQLite 数据库。内置的 SQLite 数据库文件会自动挂载至 Docker 命名卷 `quiz-db-data` 中（映射到容器内的 `/app/data/quiz.db`），这能确保即使重建或重启容器，你的数据和题目也不会丢失。
+## 说明
+
+- 应用在容器启动时会自动执行 Prisma 迁移，确保 PostgreSQL 数据库模式已同步。
+- Docker Compose 当前不再提供 Postgres 服务；它只构建和运行 Web 应用容器。
+- 如果你在本地或服务器上遇到数据库连接问题，请检查 `DATABASE_URL` 是否指向有效的 PostgreSQL 实例。
