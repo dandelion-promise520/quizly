@@ -13,6 +13,8 @@ RUN bun install --frozen-lockfile --registry https://registry.npmmirror.com
 # Build the source code
 FROM base AS builder
 WORKDIR /app
+ENV NODE_ENV=production
+ENV CI=1
 ENV DATABASE_URL="file:./quiz.db"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
