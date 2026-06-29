@@ -12,7 +12,9 @@ interface AdminDashboardProps {
   initialQuestions: Question[];
 }
 
-export default function AdminDashboard({ initialQuestions }: AdminDashboardProps) {
+export default function AdminDashboard({
+  initialQuestions,
+}: AdminDashboardProps) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -33,37 +35,39 @@ export default function AdminDashboard({ initialQuestions }: AdminDashboardProps
     }
   };
 
-  const handleSave = useCallback((q: Question) => {
-    console.log("handleSave called with question:", q);
-    setQuestions((prev) => {
-      const next = [...prev];
+  const handleSave = useCallback(
+    (q: Question) => {
+      const next = [...questions];
       if (selectedIndex !== null && !isNew) {
-        console.log(`updating existing question at index ${selectedIndex}`);
         next[selectedIndex] = q;
       } else {
-        console.log("adding new question");
         next.push(q);
         setSelectedIndex(next.length - 1);
       }
-      saveToDisk(next);
-      return next;
-    });
-    setIsNew(false);
-  }, [selectedIndex, isNew]);
 
-  const handleDelete = useCallback((idx: number) => {
-    setQuestions((prev) => {
-      const next = prev.filter((_, i) => i !== idx);
+      setQuestions(next);
+      setIsNew(false);
+      void saveToDisk(next);
+    },
+    [questions, selectedIndex, isNew],
+  );
+
+  const handleDelete = useCallback(
+    (idx: number) => {
+      const next = questions.filter((_, i) => i !== idx);
+      setQuestions(next);
+
       if (selectedIndex === idx) {
         setSelectedIndex(next.length > 0 ? 0 : null);
       } else if (selectedIndex !== null && selectedIndex > idx) {
         setSelectedIndex(selectedIndex - 1);
       }
-      saveToDisk(next);
-      return next;
-    });
-    setIsNew(false);
-  }, [selectedIndex]);
+
+      setIsNew(false);
+      void saveToDisk(next);
+    },
+    [questions, selectedIndex],
+  );
 
   const handleNew = () => {
     const emptyQ: Question = {
@@ -114,7 +118,8 @@ export default function AdminDashboard({ initialQuestions }: AdminDashboardProps
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const displayQuestion = selectedIndex !== null ? questions[selectedIndex] : null;
+  const displayQuestion =
+    selectedIndex !== null ? questions[selectedIndex] : null;
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -125,7 +130,10 @@ export default function AdminDashboard({ initialQuestions }: AdminDashboardProps
         typeFilter={typeFilter}
         onTypeFilterChange={setTypeFilter}
         selectedId={selectedIndex}
-        onSelect={(id) => { setSelectedIndex(id); setIsNew(false); }}
+        onSelect={(id) => {
+          setSelectedIndex(id);
+          setIsNew(false);
+        }}
         onDelete={handleDelete}
       />
 
