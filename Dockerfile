@@ -2,7 +2,8 @@ FROM oven/bun:1.2-alpine AS base
 
 # Install dependencies
 FROM base AS deps
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && \
+RUN sed -i 's/https/http/g' /etc/apk/repositories && \
+    sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
     apk add --no-cache libc6-compat
 WORKDIR /app
 
