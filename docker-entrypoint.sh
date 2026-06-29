@@ -15,7 +15,7 @@ ln -sf /app/data/quiz.db /app/quiz.db
 
 # Run database push to apply schema
 echo "Applying database schema..."
-npx prisma db push --accept-data-loss
+bunx prisma db push --accept-data-loss
 
 # Execute the container's CMD
 exec "$@"
