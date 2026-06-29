@@ -2,6 +2,8 @@ FROM oven/bun:1-alpine AS base
 
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
 FROM base AS deps
 COPY package.json bun.lock ./
