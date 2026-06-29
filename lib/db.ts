@@ -43,7 +43,7 @@ export async function getQuestions(): Promise<Question[]> {
       }));
       return {
         id,
-        type: type as "单选题" | "判断题",
+        type: type as "单选题" | "判断题" | "多选题",
         text,
         options: optionsArr,
         answer: q.answer,

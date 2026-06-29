@@ -7,4 +7,3 @@ export default async function Home() {
   const questions = await getQuestions();
   return <QuizPage initialQuestions={questions} />;
 }
-

@@ -22,6 +22,7 @@ export default function QuizPage({ initialQuestions }: QuizPageProps) {
     answers,
     doneFlags,
     pickAnswer,
+    submitMulti,
     submitFill,
     submitAll,
     resetAll,
@@ -57,13 +58,18 @@ export default function QuizPage({ initialQuestions }: QuizPageProps) {
           const done = !!doneFlags[i];
           const saved = answers[String(i)];
           let selectedIdx: number | undefined;
+          let selectedIndices: number[] | undefined;
           let userAnswers: string[] | undefined;
 
           if (saved !== undefined) {
             if (typeof saved === "number") {
               selectedIdx = saved;
             } else if (Array.isArray(saved)) {
-              userAnswers = saved;
+              if (q.type === "多选题") {
+                selectedIndices = saved as number[];
+              } else {
+                userAnswers = saved as string[];
+              }
             }
           }
 
@@ -74,8 +80,10 @@ export default function QuizPage({ initialQuestions }: QuizPageProps) {
               index={i}
               done={done}
               selectedIdx={selectedIdx}
+              selectedIndices={selectedIndices}
               userAnswers={userAnswers}
               onPick={pickAnswer}
+              onSubmitMulti={submitMulti}
               onSubmitFill={submitFill}
             />
           );

@@ -1,18 +1,20 @@
 "use client";
 
-import type { Question, FillQuestion, ChoiceQuestion } from "@/lib/types";
+import type { Question, FillQuestion, ChoiceQuestion, MultiChoiceQuestion } from "@/lib/types";
 import ChoiceCard from "./ChoiceCard";
 import FillCard from "./FillCard";
+import MultiChoiceCard from "./MultiChoiceCard";
 import FeedbackBanner from "./FeedbackBanner";
-import { TiltCard } from "./motion/tilt-card";
 
 interface QuestionCardProps {
   question: Question;
   index: number;
   done: boolean;
   selectedIdx?: number;
+  selectedIndices?: number[];
   userAnswers?: string[];
   onPick: (qi: number, oi: number) => void;
+  onSubmitMulti?: (qi: number, indices: number[]) => void;
   onSubmitFill: (qi: number, answers: string[]) => void;
 }
 
@@ -21,13 +23,22 @@ export default function QuestionCard({
   index,
   done,
   selectedIdx,
+  selectedIndices,
   userAnswers,
   onPick,
+  onSubmitMulti,
   onSubmitFill,
 }: QuestionCardProps) {
   const isCorrect = question.type === "填空题"
     ? userAnswers?.every((a, i) => a === (question as FillQuestion).answer[i])
-    : selectedIdx === (question as ChoiceQuestion).correctShuffledIdx;
+    : question.type === "多选题"
+      ? (
+          selectedIndices &&
+          (question as MultiChoiceQuestion).correctShuffledIndices &&
+          selectedIndices.length === (question as MultiChoiceQuestion).correctShuffledIndices!.length &&
+          selectedIndices.every((val) => (question as MultiChoiceQuestion).correctShuffledIndices!.includes(val))
+        )
+      : selectedIdx === (question as ChoiceQuestion).correctShuffledIdx;
 
   let feedbackType: "correct" | "wrong" | "unanswered" = "wrong";
   let feedbackMsg = "";
@@ -52,6 +63,19 @@ export default function QuestionCard({
         feedbackMsg = "<strong>部分正确。</strong><br>" + parts.join("<br>");
       }
     }
+  } else if (question.type === "多选题") {
+    if (selectedIndices !== undefined) {
+      if (isCorrect) {
+        feedbackType = "correct";
+        feedbackMsg = `<strong>回答正确。</strong> 正确答案：${question.answer}`;
+      } else {
+        const opts = question.shuffledOptions || question.options;
+        const selectedLabels = selectedIndices.map(idx => opts[idx]?.label).filter(Boolean).sort().join(",");
+        const label = selectedLabels || "无";
+        feedbackType = "wrong";
+        feedbackMsg = `<strong>回答错误。</strong> 你选择了 ${label}，正确答案是 ${question.answer}`;
+      }
+    }
   } else {
     if (selectedIdx !== undefined) {
       if (isCorrect) {
@@ -71,15 +95,17 @@ export default function QuestionCard({
       ? userAnswers && isCorrect
         ? "border-green-300 ring-1 ring-green-300"
         : "border-red-300 ring-1 ring-red-300"
-      : selectedIdx !== undefined && isCorrect
-        ? "border-green-300 ring-1 ring-green-300"
-        : "border-red-300 ring-1 ring-red-300"
+      : question.type === "多选题"
+        ? selectedIndices && isCorrect
+          ? "border-green-300 ring-1 ring-green-300"
+          : "border-red-300 ring-1 ring-red-300"
+        : selectedIdx !== undefined && isCorrect
+          ? "border-green-300 ring-1 ring-green-300"
+          : "border-red-300 ring-1 ring-red-300"
     : "";
 
   return (
-    <TiltCard
-      max={4}
-      glare={true}
+    <div
       className={`bg-white border border-slate-200 rounded-xl p-6 mb-4 shadow-sm transition-all duration-300 ${cardBorder}`}
     >
       {/* Question header */}
@@ -104,6 +130,14 @@ export default function QuestionCard({
           userAnswers={userAnswers}
           onSubmit={onSubmitFill}
         />
+      ) : question.type === "多选题" ? (
+        <MultiChoiceCard
+          question={question as MultiChoiceQuestion}
+          index={index}
+          done={done}
+          selectedIndices={selectedIndices}
+          onSubmit={onSubmitMulti!}
+        />
       ) : (
         <ChoiceCard
           question={question as ChoiceQuestion}
@@ -115,6 +149,6 @@ export default function QuestionCard({
       )}
 
       <FeedbackBanner show={done} type={feedbackType} message={feedbackMsg} />
-    </TiltCard>
+    </div>
   );
 }

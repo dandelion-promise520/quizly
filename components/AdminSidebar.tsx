@@ -3,6 +3,7 @@
 import type { Question, Option } from "@/lib/types";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./motion/tabs";
+import { motion, useReducedMotion } from "motion/react";
 
 interface AdminSidebarProps {
   questions: Question[];
@@ -18,6 +19,7 @@ interface AdminSidebarProps {
 const TYPE_LABELS: Record<string, string> = {
   "": "全部",
   "单选题": "单选",
+  "多选题": "多选",
   "判断题": "判断",
   "填空题": "填空",
 };
@@ -33,6 +35,8 @@ export default function AdminSidebar({
   onDelete,
 }: AdminSidebarProps) {
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const reduce = useReducedMotion();
 
   const filtered = questions.filter((q) => {
     if (typeFilter && q.type !== typeFilter) return false;
@@ -80,7 +84,7 @@ export default function AdminSidebar({
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-white relative z-0" onMouseLeave={() => setHoveredIdx(null)}>
         {filtered.map((q) => {
           const realIdx = questions.indexOf(q);
           const isSelected = selectedId === realIdx;
@@ -91,22 +95,40 @@ export default function AdminSidebar({
             <div
               key={realIdx}
               className={[
-                "flex items-start gap-2.5 px-4 py-3 cursor-pointer border-b border-slate-100 transition-colors",
-                isSelected ? "bg-teal-50 border-l-4 border-l-teal-600" : "hover:bg-slate-50",
+                "relative flex items-start gap-2.5 px-4 py-3 cursor-pointer border-b border-slate-100 transition-colors",
+                isSelected ? "bg-teal-50 border-l-4 border-l-teal-600" : "",
               ].join(" ")}
               onClick={() => onSelect(realIdx)}
+              onMouseEnter={() => setHoveredIdx(realIdx)}
             >
-              <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5">
+              {/* Sliding Hover Highlight */}
+              {realIdx === hoveredIdx && !isSelected && (
+                <motion.span
+                  layoutId="admin-sidebar-hover"
+                  className="absolute inset-0 z-[-1] bg-slate-100"
+                  transition={
+                    reduce
+                      ? { duration: 0 }
+                      : {
+                          type: "spring",
+                          stiffness: 350,
+                          damping: 30,
+                        }
+                  }
+                />
+              )}
+
+              <span className="relative z-10 text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5">
                 {realIdx + 1}
               </span>
-              <span className="text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">
+              <span className="relative z-10 text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">
                 {q.type}
               </span>
-              <span className="flex-1 text-sm text-slate-700 truncate">{preview}</span>
+              <span className="relative z-10 flex-1 text-sm text-slate-700 truncate">{preview}</span>
 
               <button
                 className={[
-                  "flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-xs transition",
+                  "relative z-10 flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-xs transition",
                   needConfirm
                     ? "bg-red-600 text-white"
                     : "text-slate-400 hover:text-red-500 hover:bg-red-50",

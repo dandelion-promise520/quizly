@@ -78,6 +78,8 @@ export interface RadioGroupItemProps {
   disabled?: boolean;
   className?: string;
   id?: string;
+  isCorrectAnswer?: boolean;
+  isWrongSelection?: boolean;
 }
 
 export function RadioGroupItem({
@@ -86,12 +88,34 @@ export function RadioGroupItem({
   disabled,
   className,
   id: idProp,
+  isCorrectAnswer,
+  isWrongSelection,
 }: RadioGroupItemProps) {
   const { value: groupValue, setValue, layoutId } = useRadioGroup();
   const autoId = useId();
   const id = idProp ?? autoId;
   const reduce = useReducedMotion();
   const selected = groupValue === value;
+
+  const showDot = selected || isCorrectAnswer || isWrongSelection;
+
+  let borderBgClass = "";
+  if (isCorrectAnswer) {
+    borderBgClass = "border-green-600 bg-green-50";
+  } else if (isWrongSelection) {
+    borderBgClass = "border-red-600 bg-red-50";
+  } else if (selected) {
+    borderBgClass = "border-teal-600 bg-teal-50";
+  } else {
+    borderBgClass = "border-slate-300 hover:border-slate-400 bg-white";
+  }
+
+  let dotColorClass = "bg-teal-600";
+  if (isCorrectAnswer) {
+    dotColorClass = "bg-green-600";
+  } else if (isWrongSelection) {
+    dotColorClass = "bg-red-600";
+  }
 
   return (
     <label
@@ -116,15 +140,13 @@ export function RadioGroupItem({
           "relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 outline-none transition-colors duration-200 cursor-pointer",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "disabled:cursor-not-allowed disabled:opacity-60",
-          selected
-            ? "border-teal-600 bg-teal-50"
-            : "border-slate-300 hover:border-slate-400 bg-white",
+          borderBgClass,
         )}
       >
-        {selected ? (
+        {showDot ? (
           <motion.span
-            layoutId={layoutId}
-            className="absolute inset-1 rounded-full bg-teal-600"
+            layoutId={selected ? layoutId : undefined}
+            className={cn("absolute inset-1 rounded-full", dotColorClass)}
             transition={reduce ? { duration: 0 } : SPRING_LAYOUT}
           />
         ) : null}

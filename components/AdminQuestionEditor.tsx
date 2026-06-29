@@ -14,7 +14,7 @@ interface AdminQuestionEditorProps {
 }
 
 type Draft = {
-  type: "单选题" | "判断题" | "填空题";
+  type: "单选题" | "判断题" | "多选题" | "填空题";
   text: string;
   options?: Option[];
   answer: string | string[];
@@ -111,7 +111,13 @@ export default function AdminQuestionEditor({
       const opts = d.options.filter((_, j) => j !== i);
       const ans = d.answer as string;
       const removed = d.options[i]?.label ?? "";
-      const newAnswer = ans === removed ? (opts[0]?.label ?? "") : ans;
+      let newAnswer = ans;
+      if (d.type === "多选题") {
+        const correctLabels = ans.split(",").map(s => s.trim()).filter(l => l !== removed);
+        newAnswer = correctLabels.join(",");
+      } else {
+        newAnswer = ans === removed ? (opts[0]?.label ?? "") : ans;
+      }
       return { ...d, options: opts, answer: newAnswer };
     });
   };
@@ -159,12 +165,20 @@ export default function AdminQuestionEditor({
         {/* Type selector */}
         <Tabs
           value={draft.type}
-          onValueChange={(val) => setDraft((d) => ({ ...d, type: val as Draft["type"] }))}
+          onValueChange={(val) => {
+            const nextType = val as Draft["type"];
+            setDraft((d) => {
+              const defaultDraft = emptyDraft(nextType);
+              defaultDraft.text = d.text;
+              return defaultDraft;
+            });
+          }}
           variant="segment"
-          className="w-[280px]"
+          className="w-[320px]"
         >
           <TabsList className="w-full">
             <TabsTrigger value="单选题" className="flex-1">单选</TabsTrigger>
+            <TabsTrigger value="多选题" className="flex-1">多选</TabsTrigger>
             <TabsTrigger value="判断题" className="flex-1">判断</TabsTrigger>
             <TabsTrigger value="填空题" className="flex-1">填空</TabsTrigger>
           </TabsList>
@@ -221,7 +235,7 @@ export default function AdminQuestionEditor({
               </div>
             ))}
 
-            {typeof draft.answer === "string" && (
+            {draft.type !== "多选题" && typeof draft.answer === "string" && (
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-slate-700">正确答案</label>
                 <Select
@@ -242,6 +256,42 @@ export default function AdminQuestionEditor({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {draft.type === "多选题" && typeof draft.answer === "string" && (
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">正确答案（可多选）</label>
+                <div className="flex gap-2.5">
+                  {(draft.options ?? []).map((opt: Option) => {
+                    const correctLabels = (draft.answer as string).split(",").map(s => s.trim()).filter(Boolean);
+                    const isCorrect = correctLabels.includes(opt.label);
+                    return (
+                      <button
+                        key={opt.label}
+                        type="button"
+                        onClick={() => {
+                          let nextLabels;
+                          if (isCorrect) {
+                            nextLabels = correctLabels.filter(l => l !== opt.label);
+                          } else {
+                            nextLabels = [...correctLabels, opt.label];
+                          }
+                          const order = (draft.options ?? []).map(o => o.label);
+                          nextLabels.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+                          setDraft(d => ({ ...d, answer: nextLabels.join(",") }));
+                        }}
+                        className={`w-10 h-10 rounded-lg border text-sm font-bold transition-all duration-200 cursor-pointer flex items-center justify-center ${
+                          isCorrect
+                            ? "bg-teal-600 border-teal-600 text-white shadow-sm"
+                            : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
