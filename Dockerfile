@@ -1,4 +1,4 @@
-FROM node:24-alpine AS base
+FROM docker.m.daocloud.io/library/node:24-alpine AS base
 
 # Install dependencies
 FROM base AS deps
